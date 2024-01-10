@@ -2,6 +2,7 @@ using FullStackAuth_WebAPI.ActionFilters;
 using FullStackAuth_WebAPI.Contracts;
 using FullStackAuth_WebAPI.Extensions;
 using FullStackAuth_WebAPI.Managers;
+using FullStackAuth_WebAPI.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -27,6 +28,7 @@ namespace FullStackAuth_WebAPI
             builder.Services.ConfigureJWT(builder.Configuration);
             builder.Services.AddScoped<IAuthenticationManager, AuthenticationManager>();
             builder.Services.AddControllers();
+            builder.Services.AddTransient<SteamApiService>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
