@@ -5,7 +5,6 @@ namespace FullStackAuth_WebAPI.Services
 {
     public class SteamApiService
     {
-        //
         public async Task<AccountInfo> GetSteamInfoAsync(string accountId)
         {
             using (HttpClient client = new HttpClient())
@@ -18,6 +17,26 @@ namespace FullStackAuth_WebAPI.Services
                     AccountInfo accountInfo = JsonConvert.DeserializeObject<AccountInfo>(jsonResponce);
 
                     return accountInfo;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        public async Task<MatchDetails> GetMatchDetailsAsync(string matchId)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage responce = await client.GetAsync($"https://api.steampowered.com/IDOTA2Match_570/GetMatchDetails/v1/?Key=0BEC74DD9AEF94FC1816B2F07F64233A&match_id={matchId}");
+
+                if (responce.IsSuccessStatusCode)
+                {
+                    string jsonResponce = await responce.Content.ReadAsStringAsync();
+                    MatchDetails matchDetails = JsonConvert.DeserializeObject<MatchDetails>(jsonResponce);
+
+                    return matchDetails;
                 }
                 else
                 {
