@@ -9,7 +9,7 @@ namespace FullStackAuth_WebAPI.Services
         {
             using (HttpClient client = new HttpClient())
             {
-                HttpResponseMessage responce = await client.GetAsync($"https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/v1/?Key=0BEC74DD9AEF94FC1816B2F07F64233A&matches_requested=100&account_id={accountId}");
+                HttpResponseMessage responce = await client.GetAsync($"https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/v1/?Key=0BEC74DD9AEF94FC1816B2F07F64233A&min_players=10&matches_requested=100&account_id={accountId}");
 
                 if (responce.IsSuccessStatusCode)
                 {
@@ -37,6 +37,26 @@ namespace FullStackAuth_WebAPI.Services
                     MatchDetails matchDetails = JsonConvert.DeserializeObject<MatchDetails>(jsonResponce);
 
                     return matchDetails;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        public async Task<AccountFriendsList> GetFriendsListAsync(string steamId)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage responce = await client.GetAsync($"https://api.steampowered.com/ISteamUser/GetFriendList/v1/?key=0BEC74DD9AEF94FC1816B2F07F64233A&steamid={steamId}");
+
+                if (responce.IsSuccessStatusCode)
+                {
+                    string jsonResponce = await responce.Content.ReadAsStringAsync();
+                    AccountFriendsList accountFriendsList = JsonConvert.DeserializeObject<AccountFriendsList>(jsonResponce);
+
+                    return accountFriendsList;
                 }
                 else
                 {

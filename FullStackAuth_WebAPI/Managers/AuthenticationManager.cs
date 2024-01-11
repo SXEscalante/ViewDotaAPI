@@ -54,7 +54,8 @@ namespace FullStackAuth_WebAPI.Managers
                 new Claim("userName", _user.UserName),
                 new Claim("email", _user.Email),
                 new Claim("id", _user.Id),
-                new Claim("steamAccountId", _user.SteamAccountId)
+                new Claim("steamAccountId", _user.SteamAccountId),
+                new Claim("steamId", _user.SteamId)
             };
 
             var roles = await _userManager.GetRolesAsync(_user);

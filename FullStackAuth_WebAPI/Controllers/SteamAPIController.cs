@@ -18,7 +18,7 @@ namespace FullStackAuth_WebAPI.Controllers
         }
 
         // GET api/<SteamAPIController>/5
-        [HttpGet("account/{accountId}")]
+        [HttpGet("account/{steamAccountId}")]
         public async Task<IActionResult> GetAccountInfo(string accountId)
         {
             AccountInfo accountInfo = await _steamService.GetSteamInfoAsync(accountId);
@@ -39,6 +39,20 @@ namespace FullStackAuth_WebAPI.Controllers
             if (matchDetails != null)
             {
                 return Ok(matchDetails);
+            }
+            else
+            {
+                return StatusCode(500, "Steam API error");
+            }
+        }
+
+        [HttpGet("friendsList/{steamId}")]
+        public async Task<IActionResult> GetFriendsList(string steamId)
+        {
+            AccountFriendsList accountFriendsList = await _steamService.GetFriendsListAsync(steamId);
+            if (accountFriendsList != null)
+            {
+                return Ok(accountFriendsList);
             }
             else
             {
