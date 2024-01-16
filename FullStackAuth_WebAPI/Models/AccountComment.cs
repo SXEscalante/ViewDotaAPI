@@ -12,9 +12,6 @@ namespace FullStackAuth_WebAPI.Models
         [ForeignKey("PostingUser")]
         public string PostingUserId { get; set; }
         public User PostingUser { get; set; }
-
-        [ForeignKey("RecipientUser")]
         public string RecipientUserId { get; set; }
-        public User RecipientUser { get; set; }
     }
 }

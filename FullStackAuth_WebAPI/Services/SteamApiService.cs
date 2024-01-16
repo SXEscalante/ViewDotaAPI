@@ -64,5 +64,25 @@ namespace FullStackAuth_WebAPI.Services
                 }
             }
         }
+
+        public async Task<FriendSummary> GetFriendsSummaryAsync(string steamId)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage responce = await client.GetAsync($"https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=0BEC74DD9AEF94FC1816B2F07F64233A&steamids={steamId}");
+
+                if (responce.IsSuccessStatusCode)
+                {
+                    string jsonResponce = await responce.Content.ReadAsStringAsync();
+                    FriendSummary friendSummary = JsonConvert.DeserializeObject<FriendSummary>(jsonResponce);
+
+                    return friendSummary;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
     }
 }

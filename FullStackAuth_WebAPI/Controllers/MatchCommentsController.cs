@@ -1,4 +1,5 @@
 ﻿using FullStackAuth_WebAPI.Data;
+using FullStackAuth_WebAPI.DataTransferObjects;
 using FullStackAuth_WebAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,13 +21,24 @@ namespace FullStackAuth_WebAPI.Controllers
         }
 
         // GET api/<MatchCommentController>/5
-        [HttpGet("{matchId}"), Authorize]
-        public IActionResult Get(int matchId)
+        [HttpGet("{matchId}")]
+        public IActionResult Get(string matchId)
         {
-            string userId = User.FindFirstValue("id");
+
             try
             {
-                var comments = _context.MatchComments.Where(c => c.MatchId == matchId);
+                var commentObjs = _context.MatchComments.Where(c => c.MatchId == matchId);
+
+                var comments = commentObjs.Select(c => new CommentDto
+                {
+                    Id = c.Id,
+                    text = c.Text,
+                    User = new UserComment
+                    {
+                        SteamAccountId = c.User.SteamAccountId,
+                        Username = c.User.UserName
+                    }
+                }).ToList();
                 return StatusCode(200, comments);
             }
             catch (Exception ex)

@@ -1,4 +1,5 @@
 ﻿using FullStackAuth_WebAPI.Data;
+using FullStackAuth_WebAPI.DataTransferObjects;
 using FullStackAuth_WebAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,14 +19,24 @@ namespace FullStackAuth_WebAPI.Controllers
             _context = context;
         }
 
-        // GET: api/<AccountCommentController>/myAccountsComments
-        [HttpGet("myAccountsComments"), Authorize]
-        public IActionResult Get()
+        [HttpGet("{steamAccountId}")]
+        public IActionResult Get(string steamAccountId)
         {
             try
             {
-                string userId = User.FindFirstValue("id");
-                var comments = _context.AccountComments.Where((c) => c.RecipientUserId.Equals(userId));
+                var commentObjs = _context.AccountComments.Where((c) => c.RecipientUserId.Equals(steamAccountId));
+
+                var comments = commentObjs.Select(c => new CommentDto 
+                {
+                    Id = c.Id,
+                    recupientUserId = c.RecipientUserId,
+                    text = c.Text,
+                    User = new UserComment
+                    {
+                        SteamAccountId = c.PostingUser.SteamAccountId,
+                        Username = c.PostingUser.UserName
+                    }
+                }).ToList();
                 return StatusCode(200, comments);
             }
             catch (Exception ex)
@@ -46,7 +57,7 @@ namespace FullStackAuth_WebAPI.Controllers
                     return Unauthorized();
                 }
                 comment.PostingUserId = userId;
-                comment.RecipientUserId = userId;
+
 
                 _context.AccountComments.Add(comment);
                 if (!ModelState.IsValid)

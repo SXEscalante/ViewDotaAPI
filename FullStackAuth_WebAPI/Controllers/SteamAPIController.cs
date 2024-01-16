@@ -1,4 +1,5 @@
-﻿using FullStackAuth_WebAPI.Models;
+﻿using FullStackAuth_WebAPI.DataTransferObjects;
+using FullStackAuth_WebAPI.Models;
 using FullStackAuth_WebAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,9 +20,9 @@ namespace FullStackAuth_WebAPI.Controllers
 
         // GET api/<SteamAPIController>/5
         [HttpGet("account/{steamAccountId}")]
-        public async Task<IActionResult> GetAccountInfo(string accountId)
+        public async Task<IActionResult> GetAccountInfo(string steamAccountId)
         {
-            AccountInfo accountInfo = await _steamService.GetSteamInfoAsync(accountId);
+            AccountInfo accountInfo = await _steamService.GetSteamInfoAsync(steamAccountId);
             if(accountInfo != null)
             {
                 return Ok(accountInfo);
@@ -49,16 +50,34 @@ namespace FullStackAuth_WebAPI.Controllers
         [HttpGet("friendsList/{steamId}")]
         public async Task<IActionResult> GetFriendsList(string steamId)
         {
+            List<FriendDetailsDTO> friendsList = new List<FriendDetailsDTO>();
             AccountFriendsList accountFriendsList = await _steamService.GetFriendsListAsync(steamId);
             if (accountFriendsList != null)
             {
-                return Ok(accountFriendsList);
+                foreach(var friend in accountFriendsList.friendslist.friends)
+                {
+                    FriendSummary friendSummary = await _steamService.GetFriendsSummaryAsync(friend.steamid);
+                    if (friendSummary != null)
+                    {
+                        FriendDetailsDTO friendDetails = new FriendDetailsDTO
+                        {
+                            personaname = friendSummary.response.players[0].personaname,
+                            steamid = friendSummary.response.players[0].steamid
+                        };
+
+                        friendsList.Add(friendDetails);
+                    }
+                    else
+                    {
+                        return StatusCode(500, "Steam API error");
+                    }
+                }
+                return Ok(friendsList);
             }
             else
             {
                 return StatusCode(500, "Steam API error");
             }
         }
-
     }
 }

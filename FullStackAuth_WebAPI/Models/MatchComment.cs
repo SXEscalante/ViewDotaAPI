@@ -8,7 +8,7 @@ namespace FullStackAuth_WebAPI.Models
         [Key]
         public int Id { get; set; }
         public string Text { get; set; }
-        public double MatchId { get; set; }
+        public string MatchId { get; set; }
 
         [ForeignKey("User")]
         public string UserId { get; set; }
